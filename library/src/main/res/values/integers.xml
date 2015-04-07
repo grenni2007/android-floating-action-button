@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="fab_animation_fade_out_duration">150</integer>
+    <integer name="fab_animation_item_duration">60</integer>
+    <integer name="fab_animation_item_delay">20</integer>
+    <integer name="fab_animation_label_duration">40</integer>
+    <integer name="fab_animation_label_delay">20</integer>
+</resources>

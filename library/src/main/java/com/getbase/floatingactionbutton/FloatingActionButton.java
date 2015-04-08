@@ -14,6 +14,7 @@ import android.graphics.Shader;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -279,7 +280,29 @@ public class FloatingActionButton extends ImageButton {
                 circleInsetHorizontal + iconOffset,
                 circleInsetBottom + iconOffset);
 
-        setBackgroundCompat(layerDrawable);
+        Drawable background;
+        if (useRipple()) {
+            background = createRippleDrawable(layerDrawable);
+        } else {
+            background = layerDrawable;
+        }
+        setBackgroundCompat(background);
+    }
+
+    private Drawable createRippleDrawable(Drawable content) {
+        ShapeDrawable rippleMask = new ShapeDrawable(new OvalShape());
+
+        int circleInsetHorizontal = (int) (mShadowRadius);
+        int circleInsetTop = (int) (mShadowRadius - mShadowOffset);
+        int circleInsetBottom = (int) (mShadowRadius + mShadowOffset);
+
+        InsetDrawable inset = new InsetDrawable(rippleMask, circleInsetHorizontal,
+                circleInsetTop,
+                circleInsetHorizontal,
+                circleInsetBottom);
+        ColorStateList rippleColor = ColorStateList.valueOf(mColorRipple);
+
+        return new RippleDrawable(rippleColor, content, inset);
     }
 
     Drawable getIconDrawable() {
@@ -294,14 +317,18 @@ public class FloatingActionButton extends ImageButton {
 
 
     private Drawable createFillDrawable(float strokeWidth) {
-        if (Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP && mRippleEnabled) {
-            return getFillDrawableWithRipple(strokeWidth);
+        if (useRipple()) {
+            return createCircleDrawable(mColorNormal, strokeWidth);
         } else {
-            return getFillDrawableWithoutRipple(strokeWidth);
+            return getFillStateListDrawable(strokeWidth);
         }
     }
 
-    private Drawable getFillDrawableWithoutRipple(float strokeWidth) {
+    private boolean useRipple() {
+        return Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP && mRippleEnabled;
+    }
+
+    private Drawable getFillStateListDrawable(float strokeWidth) {
         StateListDrawable drawable = new StateListDrawable();
         drawable.addState(new int[]{-android.R.attr.state_enabled}, createCircleDrawable(mColorDisabled, strokeWidth));
         drawable.addState(new int[]{android.R.attr.state_pressed}, createCircleDrawable(mColorPressed, strokeWidth));

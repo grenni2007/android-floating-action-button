@@ -70,7 +70,7 @@ public class TouchDelegateGroup extends TouchDelegate {
         mEnabled = enabled;
     }
 
-    public void removeAllTouchDelegate() {
+    public void removeAllTouchDelegates() {
         mTouchDelegates.clear();
         mCurrentTouchDelegate = null;
     }
